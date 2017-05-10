@@ -1460,7 +1460,6 @@ void backgroundRewriteDoneHandler(int exitcode, int bysignal) {
             else if (server.aof_fsync == AOF_FSYNC_EVERYSEC)
                 aof_background_fsync(newfd);
             server.aof_selected_db = -1; /* Make sure SELECT is re-issued */
-            aofUpdateCurrentSize();
             server.aof_rewrite_base_size = server.aof_current_size;
 
             /* Clear regular AOF buffer since its contents was just written to
@@ -1468,6 +1467,9 @@ void backgroundRewriteDoneHandler(int exitcode, int bysignal) {
             sdsfree(server.aof_buf);
             server.aof_buf = sdsempty();
         }
+
+        /* Also try to update current size of aof when aof disabled duiring rewrite */
+        aofUpdateCurrentSize();
 
         server.aof_lastbgrewrite_status = REDIS_OK;
 
