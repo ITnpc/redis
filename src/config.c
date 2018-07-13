@@ -936,6 +936,7 @@ void configSetCommand(redisClient *c) {
         ll = memtoll(o->ptr,&err);
         if (err || ll < 0) goto badfmt;
         resizeReplicationBacklog(ll);
+        resizeRvsBacklog(ll);
     } else if (!strcasecmp(c->argv[2]->ptr,"repl-backlog-ttl")) {
         if (getLongLongFromObject(o,&ll) == REDIS_ERR || ll < 0) goto badfmt;
         server.repl_backlog_time_limit = ll;

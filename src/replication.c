@@ -110,6 +110,21 @@ void replicationFeedRvsBacklog(void *ptr, size_t len) {
                              server.rvs_backlog_histlen + 1;
 }
 
+void resizeRvsBacklog(long long newsize)
+{
+    if (newsize < REDIS_REPL_BACKLOG_MIN_SIZE) {
+        newsize = REDIS_REPL_BACKLOG_MIN_SIZE;
+    }
+
+    if (server.rvs_backlog != NULL) {
+        zfree(server.rvs_backlog);
+        server.rvs_backlog = zmalloc(newsize);
+        server.rvs_backlog_histlen = 0;
+        server.rvs_backlog_idx = 0;
+        server.rvs_fregment_len = 0;
+    }
+}
+
 void createReplicationBacklog(void) {
     redisAssert(server.repl_backlog == NULL);
     server.repl_backlog = zmalloc(server.repl_backlog_size);
